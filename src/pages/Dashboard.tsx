@@ -45,10 +45,13 @@ export default function Dashboard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('materiais')
-        .select('*')
-        .filter('quantidade_disponivel', 'lt', 'limite_minimo');
+        .select('*');
       if (error) throw error;
-      return data?.length || 0;
+      // Filter locally since we need to compare columns
+      const filtered = data?.filter(material => 
+        material.quantidade_disponivel < material.limite_minimo
+      ) || [];
+      return filtered.length;
     }
   });
 
